@@ -1,0 +1,18 @@
+name: Tag Pattern Test
+on:
+  push:
+    tags:
+      - 'v[0-9]*.[0-9]*.[0-9]*'
+      - '!v[0-9]*.[0-9]*.[0-9]*-*'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify tag matches strict release pattern
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "ERROR: Tag '$TAG' does not match the strict release pattern vX.Y.Z"
+            exit 1
+          fi
+          echo "Tag accepted: $TAG"
