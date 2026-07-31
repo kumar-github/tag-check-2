@@ -1,18 +1,18 @@
-name: Tag Pattern Test
+name: Snapshot Gating Test
 on:
   push:
-    tags:
-      - 'v[0-9]*.[0-9]*.[0-9]*'
-      - '!v[0-9]*.[0-9]*.[0-9]*-*'
+    branches: [ main ]
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify tag matches strict release pattern
+      - name: Fake Version Check
+        id: snapshot-version-check
         run: |
-          TAG="${{ github.ref_name }}"
-          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "ERROR: Tag '$TAG' does not match the strict release pattern vX.Y.Z"
-            exit 1
-          fi
-          echo "Tag accepted: $TAG"
+          echo "is_snapshot_version=true" >> $GITHUB_OUTPUT
+
+      - name: Step 4 Would Run Here
+        if: steps.snapshot-version-check.outputs.is_snapshot_version == 'true'
+        run: |
+          echo "✓ Step-4 started"
+          echo "(real work would happen here)"
